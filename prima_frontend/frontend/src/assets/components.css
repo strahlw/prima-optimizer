@@ -1,0 +1,65 @@
+.p-menu.p-component {
+    border: none;
+    /* padding-bottom: 0px; */
+}
+
+.p-button {
+    box-shadow: 0px 4px 4px 0px #00000026;
+}
+
+.p-button:not(.p-button-outlined) {
+    border: none;
+}
+
+.p-button.btn-primary {
+    background: theme('colors.primary.DEFAULT');
+}
+
+.p-button.btn-primary:focus,
+.p-button.btn-primary:not(:disabled):hover {
+    background: theme('colors.primary.700');
+}
+
+.p-button.btn-secondary {
+    background: theme('colors.secondary.DEFAULT');
+}
+
+.p-button.btn-secondary:focus,
+.p-button.btn-secondary:not(:disabled):hover {
+    background: theme('colors.secondary.700');
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+    border-color: theme('colors.gray.400');
+}
+
+.card-header {
+    box-shadow: 0px 4px 4px 0px #00000040;
+}
+
+.p-card.p-component {
+    border: 1px solid #e5e5e5;
+    box-shadow: 0px 4px 4px 0px #00000040;
+}
+
+.p-datatable-header-cell {
+    color: white;
+    text-wrap: nowrap;
+}
+
+.p-datatable-thead {
+    height: 20px;
+}
+
+.router-link {
+    color: theme('colors.primary.DEFAULT');
+    text-decoration: underline;
+}
+
+.router-link:hover {
+    color: theme('colors.primary.700');
+}
+
+.p-select-option.p-select-option-selected {
+    @apply bg-gray-200 text-black;
+}

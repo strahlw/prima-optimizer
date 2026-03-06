@@ -1,0 +1,54 @@
+name: Check PHP Code Style
+
+on:
+    pull_request:
+        types:
+            - opened
+            - reopened
+            - synchronize
+        paths:
+            - api/**/*.php
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php: [8.3]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup
+              uses: ./.github/actions/setup
+              with:
+                  php-version: '8.3'
+
+            - name: Clear result.txt
+              working-directory: api
+              run: |
+                  rm -f result.txt
+                  touch result.txt
+
+            - name: Change to api directory and Install Dependencies
+              working-directory: api
+              run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            - name: Run Pint
+              working-directory: api
+              run: |
+                  ./vendor/bin/pint --test --preset=laravel -v --format=txt > result.txt || true
+                  cat result.txt
+
+            - name: Fail if issues found
+              working-directory: api
+              run: |
+                  if [ -s result.txt ]; then
+                    echo "Code style issues found. See result.txt for details."
+                    exit 1
+                  fi

@@ -1,0 +1,25 @@
+{
+    "scripts": {
+        "prettier:check:ci": "prettier --check \"frontend/src/*.{vue,ts,tsx,js,md,mdx,css,yaml}\"",
+        "prepare": "husky",
+        "version": "node ./scripts/version-bump.js"
+    },
+    "lint-staged": {
+        "frontend/src/**/*.{ts,tsx,vue,js,md,mdx,css,yaml}": [
+            "prettier --write --ignore-unknown"
+        ],
+        "api/**/*.php": [
+            "./api/vendor/bin/pint"
+        ]
+    },
+    "dependencies": {
+        "prettier": "^3.3.3"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^19.6.0",
+        "@commitlint/config-conventional": "^19.6.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.2.10"
+    },
+    "version": "0.4.1"
+}

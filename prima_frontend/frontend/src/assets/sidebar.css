@@ -1,0 +1,25 @@
+#scenario-sidebar-container > div {
+    @apply px-4 w-full;
+}
+
+#scenario-sidebar-container {
+    label {
+        @apply text-neutral-800 w-40 h-7 font-semibold text-[10px];
+    }
+
+    .sidebar-select {
+        @apply w-60 mt-1 h-8 text-xs justify-center rounded-[3.06px];
+    }
+
+    .type-pill {
+        @apply brightness-125 h-2 p-2;
+    }
+
+    .p-scrollbar-root {
+        @apply pl-2;
+    }
+
+    .p-scrollpanel-bar {
+        @apply opacity-100 bg-gray-400 w-3.5;
+    }
+}

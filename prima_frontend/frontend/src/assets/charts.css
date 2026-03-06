@@ -1,0 +1,11 @@
+.chart-title {
+    @apply text-2xl font-semibold text-neutral-800 flex-shrink-0;
+}
+
+.chart-container {
+    @apply h-80 w-full flex flex-col items-center;
+}
+
+#kpi-summary .p-chart {
+    @apply pt-4;
+}

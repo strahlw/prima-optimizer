@@ -1,0 +1,93 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "New York City",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-74.0059728, 40.7127753]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Buffalo",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-78.8783689, 42.8864468]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Syracuse",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-76.1474244, 43.0481221]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Albany",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-73.7562317, 42.6525793]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Fredonia",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-79.3317102, 42.4400577]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Potsdam",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-74.9813164, 44.6697845]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Ticonderoga",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-73.4234549, 43.8486742]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "title": "Utica",
+                "icon": "monument"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-75.232664, 43.100903]
+            }
+        }
+    ]
+}

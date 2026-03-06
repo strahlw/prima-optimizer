@@ -1,0 +1,87 @@
+name: Commit Message Lint
+
+on:
+    pull_request:
+        types: [opened, edited, reopened, synchronize]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    commitlint:
+        name: Commitlint Check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Convert PR Title to Lowercase and prepend if necessary
+              id: lowercase-title
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      const title = context.payload.pull_request.title;
+                      let lowercasedTitle = title.toLowerCase();
+
+                      // Prepend "ticket: " if the title starts with "#" (for automatic Asana indication)
+                      if (lowercasedTitle.startsWith('#')) {
+                        lowercasedTitle = `ticket: ${lowercasedTitle}`;
+                      }
+
+                      if (title !== lowercasedTitle) {
+                        const { owner, repo } = context.repo;
+                        const pull_number = context.payload.pull_request.number;
+
+                        // Update the PR title to lowercase
+                        await github.rest.pulls.update({
+                          owner,
+                          repo,
+                          pull_number,
+                          title: lowercasedTitle,
+                        });
+
+                        core.notice(`Updated PR title to: "${lowercasedTitle}"`);
+                      } else {
+                        core.notice("PR title is already lowercase.");
+                      }
+
+                      core.exportVariable('PR_TITLE', lowercasedTitle);
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            # Step 1: Checkout the repository
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Determine base commit
+              id: base_commit
+              run: |
+                  echo "HEAD_REF=$GITHUB_HEAD_REF"
+                  echo "BASE_REF=$GITHUB_BASE_REF"
+
+                  # Find the common ancestor between the base and feature branches
+                  BASE_COMMIT=$(git merge-base HEAD origin/$GITHUB_BASE_REF)
+                  echo "BASE_COMMIT=$BASE_COMMIT" >> $GITHUB_ENV
+
+            # Step 2: Setup Node.js and cache dependencies
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: frontend/.nvmrc
+                  cache: 'npm'
+
+            # Step 3: Install commitlint and configuration
+            - name: Install commitlint
+              run: npm install --save-dev @commitlint/{cli,config-conventional}
+
+            - name: Validate PR commits with commitlint
+              if: github.event.action != 'edited'
+              run: |
+                  npx commitlint --from $BASE_COMMIT --to HEAD --color --verbose
+
+            - name: Validate PR Title with Commitlint
+              run: |
+                  npx commitlint <<< $PR_TITLE --verbose
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

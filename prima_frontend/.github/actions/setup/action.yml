@@ -1,0 +1,56 @@
+name: Setup
+
+description: Sets up PHP and Composer
+
+inputs:
+    php-version:
+        description: 'The PHP version(s) you wish to use.'
+        required: true
+    php-extensions:
+        description: 'The PHP extensions you wish to use.'
+        required: false
+        default: json, dom, curl, libxml, mbstring
+
+runs:
+    using: composite
+    steps:
+        - name: Get PHP extension cache has
+          id: get-cache-hash
+
+          run: echo hash=$(echo $PHP_EXTENSIONS | md5sum | awk '{print $1}') >> $GITHUB_OUTPUT
+          shell: bash
+
+        - name: Setup cache environment
+          id: extcache
+          uses: shivammathur/cache-extensions@v1
+          with:
+              php-version: ${{ inputs.php-version }}
+              extensions: ${{ inputs.php-extensions }}
+              key: php-extensions-${{ steps.get-cache-hash.outputs.hash }}
+
+        - name: Cache extensions
+          uses: actions/cache@v4
+          with:
+              path: ${{ steps.extcache.outputs.dir }}
+              key: ${{ steps.extcache.outputs.key }}
+              restore-keys: ${{ steps.extcache.outputs.key }}
+
+        - name: Setup PHP
+          uses: shivammathur/setup-php@v2
+          with:
+              php-version: ${{ inputs.php-version }}
+              extensions: ${{ inputs.php-extensions }}
+              coverage: none
+
+        - name: Get Composer cache dir
+          id: composer-cache-dir
+          run: echo dir=$(cd api && composer config cache-files-dir) >> $GITHUB_OUTPUT
+          shell: bash
+
+        - name: Cache dependencies
+          uses: actions/cache@v4
+          with:
+              key: composer-cache-${{ hashFiles('**/api/composer.lock') }}
+              # TODO: Revisit caching to eliminate full re-install whenever a package is updated
+              path: api/vendor
+              restore-keys: composer-cache-

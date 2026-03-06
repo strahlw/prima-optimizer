@@ -1,0 +1,47 @@
+{
+    // "typescript.tsdk": "frontend/node_modules/typescript/lib",
+    "typescript.tsdk": "frontend/node_modules/vue-tsc",
+    "[typescript, javascript]": {
+        "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": false
+    },
+    "prettier.configPath": "../.prettierrc",
+    "prettier.enable": true,
+    "prettier.enableDebugLogs": true,
+
+    "eslint.alwaysShowStatus": true,
+    "eslint.debug": false,
+    "eslint.format.enable": true,
+    "eslint.options": {
+        "overrideConfigFile": "../.eslintrc.cjs"
+    },
+    "eslint.probe": ["javascript", "typescript", "vue"],
+    "eslint.validate": ["javascript", "typescript", "vue"],
+
+    "[vue]": {
+        "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": false
+    },
+
+    "volar.icon.finder": true,
+    "volar.icon.preview": true,
+    "volar.tsPlugin": true,
+    "volar.tsPluginStatus": true,
+
+    // VScode Editor settings
+    // Requires "Format Code Action" VSCode Extension
+    "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
+    "editor.colorDecorators": false,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "editor.linkedEditing": true,
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "none",
+    "editor.rulers": [80],
+    "editor.wordWrap": "on",
+    "editor.guides.indentation": false,
+    "editor.guides.highlightActiveIndentation": false
+}

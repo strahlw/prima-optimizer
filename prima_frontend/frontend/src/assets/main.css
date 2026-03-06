@@ -1,0 +1,53 @@
+@import './base.css';
+@import './components.css';
+@import './custom.css';
+@import './forms.css';
+@import './sidebar.css';
+@import './charts.css';
+
+@layer tailwind-base, primevue, tailwind-utilities;
+
+@layer tailwind-base {
+    @tailwind base;
+}
+
+@layer tailwind-utilities {
+    @tailwind components;
+    @tailwind utilities;
+}
+
+/* @import './base.css';
+@import './components.css';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import './custom.css';
+@import './forms.css'; */
+
+/* #app {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    font-weight: normal;
+    flex-grow: 1;
+} */
+
+body {
+    display: flex;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}

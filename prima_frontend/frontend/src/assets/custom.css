@@ -1,0 +1,11 @@
+.border-dotted {
+    border: 'dotted';
+}
+
+.percentage-input-number * {
+    width: 4rem;
+}
+
+.mapboxgl-popup-content {
+    opacity: 0.8;
+}

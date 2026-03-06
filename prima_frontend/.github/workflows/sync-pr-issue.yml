@@ -1,0 +1,100 @@
+name: Sync Issue Labels and Milestone to Pull Request
+
+on:
+    pull_request:
+        types: [opened, edited, synchronize]
+
+jobs:
+    sync_labels_milestone:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Extract text after colon from PR title
+              run: |
+                  PR_TITLE="${{ github.event.pull_request.title }}"
+                  EXTRACTED_TEXT="${PR_TITLE#*:}"
+                  echo "Extracted text: $EXTRACTED_TEXT"
+                  echo "extracted_text=$EXTRACTED_TEXT" >> $GITHUB_ENV
+
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Find GitHub issue with extracted text
+              id: find_issue
+              run: |
+                  ISSUES=$(gh issue list --search "state:open ${{ env.extracted_text }}" --json number,title,labels,milestone --jq '.[]')
+                  if [ -z "$ISSUES" ]; then
+                    echo "No issue found matching the criteria."
+                    exit 0
+                  fi
+
+                  # Parse the first issue
+                  ISSUE_NUMBER=$(gh issue list --search "state:open ${{ env.extracted_text }}" --json number --jq '.[0].number')
+                  ISSUE_LABELS=$(gh issue view $ISSUE_NUMBER --json labels --jq '.labels[].name' | tr '\n' ',' | sed 's/,$//')
+                  ISSUE_MILESTONE=$(gh issue view $ISSUE_NUMBER --json milestone --jq '.milestone.title')
+
+                  echo "Issue Number: $ISSUE_NUMBER"
+                  echo "Labels: $ISSUE_LABELS"
+                  echo "Milestone: $ISSUE_MILESTONE"
+
+                  # Export outputs
+                  echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+                  echo "issue_label=$ISSUE_LABELS" >> $GITHUB_OUTPUT
+                  echo "issue_milestone=$ISSUE_MILESTONE" >> $GITHUB_OUTPUT
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Check Existing PR Labels
+              id: check_pr_labels
+              run: |
+                  PR_NUMBER=${{ github.event.pull_request.number }}
+                  EXISTING_LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name' | tr '\n' ',' | sed 's/,$//')
+                  echo "Existing PR Labels: $EXISTING_LABELS"
+                  echo "existing_labels=$EXISTING_LABELS" >> $GITHUB_OUTPUT
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Apply All Labels to Pull Request
+              if: steps.find_issue.outputs.issue_label && steps.find_issue.outputs.issue_label != ''
+              run: |
+                  PR_NUMBER=${{ github.event.pull_request.number }}
+                  NEW_LABELS=${{ steps.find_issue.outputs.issue_label }}
+                  EXISTING_LABELS=${{ steps.check_pr_labels.outputs.existing_labels }}
+                    
+                  # Split the comma-separated labels and add each one
+                  IFS=',' read -ra NEW_LABEL_ARRAY <<< "$NEW_LABELS"
+                  IFS=',' read -ra EXISTING_LABEL_ARRAY <<< "$EXISTING_LABELS"
+                  for LABEL in "${NEW_LABEL_ARRAY[@]}"; do
+                      if [[ ! ",${EXISTING_LABELS}," == *",$LABEL,"* ]]; then
+                          echo "Applying label '$LABEL' to PR #$PR_NUMBER."
+                          gh pr edit $PR_NUMBER --add-label "$LABEL"
+                      else
+                          echo "Label '$LABEL' already exists on PR. Skipping."
+                      fi
+                  done
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Check Existing PR Milestone
+              id: check_pr_milestone
+              run: |
+                  PR_NUMBER=${{ github.event.pull_request.number }}
+                  EXISTING_MILESTONE=$(gh pr view $PR_NUMBER --json milestone --jq '.milestone.title')
+                  echo "Existing PR Milestone: $EXISTING_MILESTONE"
+                  echo "existing_milestone=$EXISTING_MILESTONE" >> $GITHUB_OUTPUT
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Apply Milestone to Pull Request
+              if: steps.find_issue.outputs.issue_milestone && steps.find_issue.outputs.issue_milestone != '' && steps.check_pr_milestone.outputs.existing_milestone != steps.find_issue.outputs.issue_milestone
+              run: |
+                  PR_NUMBER=${{ github.event.pull_request.number }}
+                  MILESTONE="${{ steps.find_issue.outputs.issue_milestone }}"
+
+                  # Set the milestone for the PR
+                  gh pr edit $PR_NUMBER --milestone "$MILESTONE"
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Output Applied Label
+              run: |
+                  echo "Applied label: ${{ steps.find_issue.outputs.issue_label }}"

@@ -1,0 +1,62 @@
+body {
+    min-height: 100vh;
+    transition:
+        color 0.5s,
+        background-color 0.5s;
+    line-height: 1.6;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Fira Sans',
+        'Droid Sans',
+        'Helvetica Neue',
+        sans-serif;
+    font-size: 15px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0px;
+}
+
+:root {
+    --navbar-height: 66px; /* Default height for navbar */
+    --p-brown-50: '#efebe9';
+    --p-brown-100: #d7ccc8;
+    --p-brown-200: '#bcaaa4';
+    --p-brown-300: #a1887f;
+    --p-brown-400: #8d6e63;
+    --p-brown-500: #795548;
+    --p-brown-600: #6d4c41;
+    --p-brown-700: #5d4037;
+    --p-brown-800: #4e342e;
+    --p-brown-900: #3e2723;
+}
+
+#app {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    width: 100vw; /* Explicitly constrain to viewport width */
+    max-width: 100vw; /* Never exceed viewport */
+    font-weight: normal;
+    box-sizing: border-box; /* Include padding/borders in width calculation */
+    overflow-x: hidden;
+}
+
+.navbar {
+    width: 100%;
+    background-color: white;
+    padding: 0.5rem 3rem;
+    height: var(--navbar-height);
+}
+
+.p-datatable-paginator-bottom {
+    border: none;
+    margin-top: 0.25rem;
+}

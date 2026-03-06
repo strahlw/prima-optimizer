@@ -1,0 +1,7 @@
+.percentage-input-number {
+    @apply justify-self-end w-16 text-sm;
+}
+
+.input-card {
+    @apply border-solid border-2 border-slate-300 overflow-auto;
+}

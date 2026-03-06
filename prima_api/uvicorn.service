@@ -1,0 +1,16 @@
+# Systemd file to install Uvicorn
+[Unit]
+Description=PRIMO API Frontend FastAPI service
+After=network.target
+
+[Service]
+Type=simple
+User=fastapiuser
+Group=www-data
+WorkingDirectory=/var/www/netl-mwu/primo-ui-web-api/app
+ExecStart=/var/www/netl-mwu/primo-ui-web-api/uvicorn.sh
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

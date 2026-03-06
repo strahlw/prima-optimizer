@@ -1,0 +1,21 @@
+[tool.isort]
+import_heading_firstparty = "User-defined libs"
+import_heading_stdlib = "Standard libs"
+import_heading_thirdparty = "Installed libs"
+profile = "black"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+src_paths = ["app"]
+
+[tool.pytest.ini_options]
+addopts = "--ignore=app/primo-optimizer"
+
+[tool.coverage.run]
+branch = true
+command_line = '-m pytest'
+source = ['app/']
+
+[tool.coverage.report]
+omit = ["app/export_doc.py"]
+precision = 2
+skip_covered = true
+fail_under = 90

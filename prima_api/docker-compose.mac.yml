@@ -1,0 +1,67 @@
+services:
+
+  web:
+    build: ./app
+    platform: linux/amd64
+    ports:
+      - 9090:9090
+    command: gunicorn --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:9090 -w 2 main:app --log-level info
+    volumes:
+      - ./app:/usr/src/app
+    env_file:
+      - ".env"
+    depends_on:
+      - redis
+      - mongodb
+
+  worker:
+    build: ./app
+    platform: linux/amd64
+    command: bash -c "
+      chown -R nobody:nogroup /usr/src/app/logs/ &&
+      celery --app=primo_executor.primo_queue_manager.QUEUE_APP worker --concurrency=2 --loglevel=info --uid=nobody --gid=nogroup
+      "
+    volumes:
+      - ./app:/usr/src/app
+    env_file:
+      - ".env"
+    depends_on:
+      - web
+      - redis
+
+  redis:
+    image: redis:7
+    platform: linux/amd64
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 60 1 --loglevel verbose
+    volumes:
+      - ./app/data/redis:/data
+
+  mongodb:
+      image: mongo:latest
+      platform: linux/amd64
+      env_file:
+      - ".env"
+      command:
+        - "--logpath"
+        - "/var/log/mongodb/mongod.log"
+      ports:
+      - 27017:27017
+      volumes:
+        - ./app/data/mongodb:/data/db
+
+  dashboard:
+    build: ./app
+    platform: linux/amd64
+    command: celery --broker=redis://redis:6379 flower --port=5555
+    ports:
+      - 5555:5555
+    env_file:
+      - ".env"
+    depends_on:
+      - web
+      - redis
+      - mongodb
+      - worker

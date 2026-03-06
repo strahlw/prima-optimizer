@@ -1,0 +1,9 @@
+black
+isort
+httpx
+linkify-it-py
+pyenchant
+pylint
+pytest
+pytest-cov
+-r requirements.txt

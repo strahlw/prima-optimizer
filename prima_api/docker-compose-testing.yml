@@ -1,0 +1,73 @@
+services:
+
+  web:
+    build: ./app
+    ports:
+      - 9090:9090
+    command: gunicorn --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:9090 -w 2 main:app --log-level info
+    volumes:
+      - ./app:/usr/src/app
+    env_file:
+      - '.env'
+    depends_on:
+      - redis
+      - mongodb
+      - mysql
+
+  worker:
+    build: ./app
+    command: bash -c "
+      chown -R nobody:nogroup /usr/src/app/logs/ &&
+      celery --app=primo_executor.primo_queue_manager.QUEUE_APP worker --concurrency=1 --loglevel=info --uid=nobody --gid=nogroup --max-tasks-per-child 1
+      "
+    # PR 131 https://github.com/NEMRI-org/primo-ui-web-api/pull/131
+    # max tasks per child is set to 1 to prevent memory bloating from the copy-on-write OS and python reference count updates
+    # see https://docs.celeryq.dev/en/stable/userguide/optimizing.html#:~:text=Keep%20in%20mind,and%20worker_max_memory_per_child%20settings. 
+    volumes:
+      - ./app:/usr/src/app
+    env_file:
+      - '.env'
+    depends_on:
+      - web
+      - redis
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 60 1 --loglevel verbose
+
+  mongodb:
+      image: mongo:latest
+      env_file:
+      - '.env'
+      command:
+        - '--logpath'
+        - '/var/log/mongodb/mongod.log'
+      ports:
+      - 27017:27017
+
+  mysql:
+      image: mysql:latest
+      restart: always
+      env_file:
+      - '.env'
+      ports:
+      - 3306:3306
+      volumes:
+        - ./app/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  dashboard:
+    build: ./app
+    command: celery --broker=redis://redis:6379 flower --port=5555
+    ports:
+      - 5555:5555
+    env_file:
+      - '.env'
+    depends_on:
+      - web
+      - redis
+      - mongodb
+      - worker
+      - mysql

@@ -1,0 +1,15 @@
+# Systemd file to install celery service on host
+[Unit]
+Description=PRIMO API Frontend Celery Service
+After=network.target uvicorn.service
+
+[Service]
+Type=simple
+User=fastapiuser
+Group=www-data
+WorkingDirectory=/var/www/netl-mwu/primo-ui-web-api/app
+ExecStart=/var/www/netl-mwu/primo-ui-web-api/celery.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+[submodule "app/primo-optimizer"]
+	path = app/primo-optimizer
+	url = https://github.com/NEMRI-org/well-plugging.git
